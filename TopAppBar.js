@@ -1,7 +1,12 @@
 import React from 'react';
 import classnames from 'classnames';
+import {MDCTopAppBarFoundation, MDCFixedTopAppBarFoundation, MDCShortTopAppBarFoundation} from '@material/top-app-bar';
+import PropTypes from 'prop-types';
 
 export default class TopAppBar extends React.Component {
+
+  foundation_ = null;
+
   constructor(props) {
     super(props);
     this.topAppBarElement = React.createRef();
@@ -27,6 +32,27 @@ export default class TopAppBar extends React.Component {
       'mdc-top-app-bar--prominent': prominent,
     });
   }
+
+  componentDidMount() {
+    this.initializeFoundation();
+  }
+
+  componentWillUnmount() {
+    this.foundation_.destroy();
+  }
+
+  initializeFoundation = () => {
+    if (this.props.short) {
+      this.foundation_ = new MDCShortTopAppBarFoundation(this.adapter);
+    } else if (this.props.fixed) {
+      this.foundation_ = new MDCFixedTopAppBarFoundation(this.adapter);
+    } else {
+      this.foundation_ = new MDCTopAppBarFoundation(this.adapter);
+    }
+
+    this.foundation_.init();
+  }
+
   get adapter() {
     const {actionItems} = this.props;
 
@@ -54,6 +80,7 @@ export default class TopAppBar extends React.Component {
       title,
       navIcon,
     } = this.props;
+    console.log('this.props: ', this.props);
 
     return (
       <header
@@ -98,4 +125,24 @@ export default class TopAppBar extends React.Component {
     const {style: internalStyle} = this.state;
     return Object.assign({}, internalStyle, style);
   }
+}
+
+TopAppBar.propTypes = {
+  alwaysCollapsed: PropTypes.bool,
+  short: PropTypes.bool,
+  fixed: PropTypes.bool,
+  prominent: PropTypes.bool,
+  title: PropTypes.string,
+  actionItems: PropTypes.arrayOf(PropTypes.element),
+  navIcon: PropTypes.element
+}
+
+TopAppBar.defaultProps = {
+  alwaysCollapsed: false,
+  short: false,
+  fixed: false,
+  prominent: false,
+  title: '',
+  actionItems: null,
+  navIcon: null,
 }
